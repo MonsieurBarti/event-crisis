@@ -1,0 +1,63 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+.npmrc
+
+# yarn
+.yarn
+.yarnrc
+
+# testing
+coverage
+
+# build
+build/
+dist/
+out/
+.eslintcache
+
+# next.js
+.next/
+next-env.d.ts
+
+# storybook
+storybook-static/
+
+# misc
+.DS_Store
+*.pem
+.misc
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+**/.env
+.env.local
+.env.*.local
+**/key.json
+
+# turbo
+.turbo
+
+# typescript
+*.tsbuildinfo
+*manager.ts
+
+# translations
+**/locales/**/*.po
+**/locales/**/*.js
+**/locales/**/*.ts
+
+.idea
+
+#DB Dump
+local_dump_file.sql
+gar-sa.key.json
+.vercel

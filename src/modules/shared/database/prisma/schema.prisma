@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Game {
+  id                     String    @id @default(uuid())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  initialBudget         Int
+  currentBudget          Int
+  playerId               String
+  selectedBriefId        String?
+  selectedVenueId        String?
+  selectedConceptId      String?
+  selectedConstraintId   String?
+  selectedEntertainmentId String?
+  selectedCateringId     String?
+  resolvedIssueIds       String    @default("[]")
+  resolvedIssueOptionIds String    @default("[]")
+  finalStrategyType      String?
+  finalScore             Int?
+  isCompleted            Boolean   @default(false)
+}
+
+model Brief {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  budget      Int
+}
+
+model Venue {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  cost        Int
+}
+
+model Concept {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  cost        Int
+}
+
+model Constraint {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  impact      String
+}
+
+model Entertainment {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  cost        Int
+  impact      Int
+}
+
+model Catering {
+  id               String @id @default(uuid())
+  name             String
+  description      String
+  cost             Int
+  guestSatisfaction Int
+}
+
+model UnexpectedIssue {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  options     UnexpectedIssueOption[]
+}
+
+model UnexpectedIssueOption {
+  id              String @id @default(uuid())
+  name            String
+  description     String
+  budgetImpact    Int
+  unexpectedIssue UnexpectedIssue @relation(fields: [unexpectedIssueId], references: [id])
+  unexpectedIssueId String
+}
