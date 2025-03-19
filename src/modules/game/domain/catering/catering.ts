@@ -13,7 +13,7 @@ export class Catering {
 	private readonly _cost: number;
 	private readonly _guestSatisfaction: number;
 
-	constructor(props: CateringProps) {
+	private constructor(props: CateringProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;

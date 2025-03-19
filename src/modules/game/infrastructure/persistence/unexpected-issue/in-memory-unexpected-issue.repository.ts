@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { UnexpectedIssueRepository } from "@/modules/game/domain/unexpected-issue/unexpected-issue.repository";
-import { UnexpectedIssue } from "@/modules/game/domain/unexpected-issue/unexpected-issue";
+import {
+	UnexpectedIssue,
+	UnexpectedIssueOption,
+} from "@/modules/game/domain/unexpected-issue/unexpected-issue";
 
 @Injectable()
 export class InMemoryUnexpectedIssueRepository implements UnexpectedIssueRepository {

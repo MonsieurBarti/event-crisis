@@ -14,6 +14,11 @@ export class InMemoryCateringRepository implements CateringRepository {
 		this.caterings.clear();
 	}
 
+	async save(catering: Catering): Promise<Catering> {
+		this.caterings.set(catering.id, catering);
+		return catering;
+	}
+
 	async findById(id: string): Promise<Catering | null> {
 		const catering = this.caterings.get(id);
 		return catering || null;

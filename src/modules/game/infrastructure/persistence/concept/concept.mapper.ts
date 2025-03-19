@@ -5,7 +5,7 @@ type DatabaseConcept = Prisma.ConceptGetPayload<true>;
 
 export class ConceptMapper {
 	static toDomain(prismaConcept: DatabaseConcept): Concept {
-		return new Concept({
+		return Concept.create({
 			id: prismaConcept.id,
 			name: prismaConcept.name,
 			description: prismaConcept.description,

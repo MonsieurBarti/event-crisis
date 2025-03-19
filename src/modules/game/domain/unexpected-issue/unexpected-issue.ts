@@ -11,7 +11,7 @@ export class UnexpectedIssueOption {
 	private _description: string;
 	private _budgetImpact: number;
 
-	constructor(props: UnexpectedIssueOptionProps) {
+	private constructor(props: UnexpectedIssueOptionProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;
@@ -56,7 +56,7 @@ export class UnexpectedIssue {
 	private _description: string;
 	private _options: UnexpectedIssueOption[];
 
-	constructor(props: UnexpectedIssueProps) {
+	private constructor(props: UnexpectedIssueProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;

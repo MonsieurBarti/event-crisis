@@ -13,7 +13,7 @@ export class Entertainment {
 	private readonly _cost: number;
 	private readonly _impact: number;
 
-	constructor(props: EntertainmentProps) {
+	private constructor(props: EntertainmentProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;

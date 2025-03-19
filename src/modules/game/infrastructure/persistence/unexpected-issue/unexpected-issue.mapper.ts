@@ -12,18 +12,17 @@ type DatabaseUnexpectedIssueOption = Prisma.UnexpectedIssueOptionGetPayload<true
 
 export class UnexpectedIssueMapper {
 	static toDomain(prismaUnexpectedIssue: DatabaseUnexpectedIssue): UnexpectedIssue {
-		return new UnexpectedIssue({
+		return UnexpectedIssue.create({
 			id: prismaUnexpectedIssue.id,
 			name: prismaUnexpectedIssue.name,
 			description: prismaUnexpectedIssue.description,
-			options: prismaUnexpectedIssue.options.map(
-				(option) =>
-					new UnexpectedIssueOption({
-						id: option.id,
-						name: option.name,
-						description: option.description,
-						budgetImpact: option.budgetImpact,
-					}),
+			options: prismaUnexpectedIssue.options.map((option) =>
+				UnexpectedIssueOption.create({
+					id: option.id,
+					name: option.name,
+					description: option.description,
+					budgetImpact: option.budgetImpact,
+				}),
 			),
 		});
 	}

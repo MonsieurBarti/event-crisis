@@ -14,6 +14,11 @@ export class InMemoryEntertainmentRepository implements EntertainmentRepository 
 		this.entertainments.clear();
 	}
 
+	async save(entertainment: Entertainment): Promise<Entertainment> {
+		this.entertainments.set(entertainment.id, entertainment);
+		return entertainment;
+	}
+
 	async findById(id: string): Promise<Entertainment | null> {
 		const entertainment = this.entertainments.get(id);
 		return entertainment || null;

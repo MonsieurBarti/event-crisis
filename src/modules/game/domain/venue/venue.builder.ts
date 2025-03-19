@@ -35,7 +35,7 @@ export class VenueBuilder {
 	}
 
 	build(): Venue {
-		return new Venue({
+		return Venue.create({
 			id: this.id,
 			name: this.name,
 			description: this.description,

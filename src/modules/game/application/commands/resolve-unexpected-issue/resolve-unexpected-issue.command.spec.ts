@@ -36,7 +36,7 @@ describe("ResolveUnexpectedIssueCommandHandler", () => {
 			.withSelectedConceptId(conceptId)
 			.build();
 
-		const issue = UnexpectedIssueBuilder.create()
+		const issue = new UnexpectedIssueBuilder()
 			.withId(issueId)
 			.withName("Test Issue")
 			.withDescription("Test Issue Description")
@@ -150,7 +150,7 @@ describe("ResolveUnexpectedIssueCommandHandler", () => {
 			.withSelectedConceptId(conceptId)
 			.build();
 
-		const issue = UnexpectedIssueBuilder.create()
+		const issue = new UnexpectedIssueBuilder()
 			.withId(issueId)
 			.withOption({
 				id: validOptionId,
@@ -197,7 +197,7 @@ describe("ResolveUnexpectedIssueCommandHandler", () => {
 			.withResolvedIssueOptionIds([existingOptionId1, existingOptionId2, existingOptionId3])
 			.build();
 
-		const issue = UnexpectedIssueBuilder.create()
+		const issue = new UnexpectedIssueBuilder()
 			.withId(issueId)
 			.withOption({
 				id: optionId,
@@ -239,7 +239,7 @@ describe("ResolveUnexpectedIssueCommandHandler", () => {
 			.withResolvedIssueOptionIds([existingOptionId])
 			.build();
 
-		const issue = UnexpectedIssueBuilder.create()
+		const issue = new UnexpectedIssueBuilder()
 			.withId(issueId)
 			.withOption({
 				id: optionId,

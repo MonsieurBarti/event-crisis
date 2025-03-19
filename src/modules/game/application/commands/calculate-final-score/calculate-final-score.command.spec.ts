@@ -74,7 +74,7 @@ describe("CalculateFinalScoreCommandHandler", () => {
 			.withSelectedCateringId(cateringId)
 			.withResolvedIssueIds([issueId])
 			.withResolvedIssueOptionIds([optionId])
-			.withFinalStrategyType("gambling")
+			.withFinalStrategyType("GAMBLING")
 			.build();
 
 		const brief = new BriefBuilder().withId(briefId).withBudget(briefBudget).build();
@@ -153,7 +153,7 @@ describe("CalculateFinalScoreCommandHandler", () => {
 			.withSelectedCateringId(uuidv4())
 			.withResolvedIssueIds([uuidv4()])
 			.withResolvedIssueOptionIds([uuidv4()])
-			.withFinalStrategyType("gambling")
+			.withFinalStrategyType("GAMBLING")
 			.build();
 
 		gameRepository.setActiveGame(game);

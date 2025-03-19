@@ -35,7 +35,7 @@ export class ConceptBuilder {
 	}
 
 	build(): Concept {
-		return new Concept({
+		return Concept.create({
 			id: this.id,
 			name: this.name,
 			description: this.description,

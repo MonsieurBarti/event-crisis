@@ -35,7 +35,7 @@ export class BriefBuilder {
 	}
 
 	build(): Brief {
-		return new Brief({
+		return Brief.create({
 			id: this.id,
 			name: this.name,
 			description: this.description,

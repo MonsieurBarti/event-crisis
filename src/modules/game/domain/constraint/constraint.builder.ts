@@ -35,7 +35,7 @@ export class ConstraintBuilder {
 	}
 
 	build(): Constraint {
-		return new Constraint({
+		return Constraint.create({
 			id: this.id,
 			name: this.name,
 			description: this.description,

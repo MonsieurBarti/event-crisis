@@ -39,7 +39,7 @@ export class InitializeGameCommandHandler implements ICommandHandler<InitializeG
 			return existingGame;
 		}
 
-		const game = new Game({
+		const game = Game.create({
 			id: uuidv4(),
 			createdAt: new Date(),
 			updatedAt: new Date(),

@@ -87,44 +87,46 @@ export class CalculateFinalScoreCommandHandler
 		if (!concept) throw new NotFoundError("Concept", game.selectedConceptId);
 		if (!constraint) throw new NotFoundError("Constraint", game.selectedConstraintId);
 
-		// Calculate score based on remaining budget and available entities
-		// This is a simplified scoring algorithm that can be customized
-		let score = game.currentBudget;
+		let rawScore = 0;
 
-		// Base score using the cost of items as a quality indicator
-		// Higher cost venues and concepts might be "better"
-		const venueScore = venue.cost / 10;
-		const conceptScore = concept.cost / 5;
-
-		score += venueScore + conceptScore;
-
-		// Budget efficiency - reward for having more of the initial budget remaining
 		const budgetEfficiencyScore = (game.currentBudget / brief.budget) * 100;
-		score += budgetEfficiencyScore;
 
-		// Apply strategy multiplier
+		const venueScore = venue.cost / 1000;
+		const conceptScore = concept.cost / 1000;
+
+		rawScore = budgetEfficiencyScore + venueScore + conceptScore;
+
 		let strategyMultiplier = 1.0;
 		switch (game.finalStrategyType) {
-			case "gambling":
-				// Higher risk, higher reward
+			case "GAMBLING":
 				strategyMultiplier = 1.2;
 				break;
-			case "marketing":
-				// Balanced approach
+			case "MARKETING":
 				strategyMultiplier = 1.1;
 				break;
-			case "profitability":
-				// Conservative approach
+			case "PROFITABILITY":
 				strategyMultiplier = 1.05;
 				break;
 			default:
 				strategyMultiplier = 1.0;
 		}
 
-		score *= strategyMultiplier;
-		const finalScore = Math.round(score);
+		rawScore *= strategyMultiplier;
 
-		// Complete the game with the calculated score
+		const MIN_POSSIBLE_SCORE = 0;
+		const MAX_POSSIBLE_SCORE = 200;
+		const MIN_FINAL_SCORE = 1;
+		const MAX_FINAL_SCORE = 20;
+
+		let finalScore =
+			MIN_FINAL_SCORE +
+			((rawScore - MIN_POSSIBLE_SCORE) / (MAX_POSSIBLE_SCORE - MIN_POSSIBLE_SCORE)) *
+				(MAX_FINAL_SCORE - MIN_FINAL_SCORE);
+
+		finalScore = Math.max(MIN_FINAL_SCORE, Math.min(MAX_FINAL_SCORE, finalScore));
+
+		finalScore = Math.round(finalScore);
+
 		const completedGame = game.complete(finalScore);
 		await this.gameRepository.save(completedGame);
 

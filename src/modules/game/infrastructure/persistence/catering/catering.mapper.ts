@@ -5,7 +5,7 @@ type DatabaseCatering = Prisma.CateringGetPayload<true>;
 
 export class CateringMapper {
 	static toDomain(dbModel: DatabaseCatering): Catering {
-		return new Catering({
+		return Catering.create({
 			id: dbModel.id,
 			name: dbModel.name,
 			description: dbModel.description,

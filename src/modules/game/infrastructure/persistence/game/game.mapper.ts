@@ -1,11 +1,25 @@
-import { Game } from "@/modules/game/domain/game/game";
+import { FinalStrategyType, Game } from "@/modules/game/domain/game/game";
 import { Prisma } from "@/modules/shared/database";
 
 type DatabaseGame = Prisma.GameGetPayload<true>;
+type DatabaseFinalStrategyType = NonNullable<DatabaseGame["finalStrategyType"]>;
 
 export class GameMapper {
+	static toDomainFinalStrategyType(
+		databaseFinalStrategyType: DatabaseFinalStrategyType,
+	): FinalStrategyType {
+		switch (databaseFinalStrategyType) {
+			case "GAMBLING":
+				return FinalStrategyType.GAMBLING;
+			case "MARKETING":
+				return FinalStrategyType.MARKETING;
+			case "PROFITABILITY":
+				return FinalStrategyType.PROFITABILITY;
+		}
+	}
+
 	static toDomain(prismaGame: DatabaseGame): Game {
-		return new Game({
+		return Game.create({
 			id: prismaGame.id,
 			createdAt: prismaGame.createdAt,
 			updatedAt: prismaGame.updatedAt,
@@ -24,7 +38,9 @@ export class GameMapper {
 			resolvedIssueOptionIds: prismaGame.resolvedIssueOptionIds
 				? JSON.parse(prismaGame.resolvedIssueOptionIds)
 				: [],
-			finalStrategyType: prismaGame.finalStrategyType,
+			finalStrategyType: prismaGame.finalStrategyType
+				? this.toDomainFinalStrategyType(prismaGame.finalStrategyType)
+				: null,
 			finalScore: prismaGame.finalScore,
 			isCompleted: prismaGame.isCompleted,
 		});

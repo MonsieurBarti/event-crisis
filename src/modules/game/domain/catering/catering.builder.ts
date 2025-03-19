@@ -34,7 +34,7 @@ export class CateringBuilder {
 	}
 
 	build(): Catering {
-		return new Catering({
+		return Catering.create({
 			id: this.id,
 			name: this.name,
 			description: this.description,

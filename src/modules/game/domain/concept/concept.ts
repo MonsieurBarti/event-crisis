@@ -11,7 +11,7 @@ export class Concept {
 	private _description: string;
 	private _cost: number;
 
-	constructor(props: ConceptProps) {
+	private constructor(props: ConceptProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;

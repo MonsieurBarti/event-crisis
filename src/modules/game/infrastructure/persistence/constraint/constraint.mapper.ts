@@ -5,7 +5,7 @@ type DatabaseConstraint = Prisma.ConstraintGetPayload<true>;
 
 export class ConstraintMapper {
 	static toDomain(prismaConstraint: DatabaseConstraint): Constraint {
-		return new Constraint({
+		return Constraint.create({
 			id: prismaConstraint.id,
 			name: prismaConstraint.name,
 			description: prismaConstraint.description,

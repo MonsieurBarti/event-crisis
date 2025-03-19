@@ -11,7 +11,7 @@ export class Constraint {
 	private _description: string;
 	private _impact: string;
 
-	constructor(props: ConstraintProps) {
+	private constructor(props: ConstraintProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;

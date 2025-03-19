@@ -11,7 +11,7 @@ export class Brief {
 	private _description: string;
 	private _budget: number;
 
-	constructor(props: BriefProps) {
+	private constructor(props: BriefProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;

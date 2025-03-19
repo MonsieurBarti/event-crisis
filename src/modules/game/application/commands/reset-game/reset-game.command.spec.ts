@@ -29,7 +29,7 @@ describe("ResetGameCommandHandler", () => {
 			.withSelectedCateringId(uuidv4())
 			.withResolvedIssueIds([issueId])
 			.withResolvedIssueOptionIds([optionId])
-			.withFinalStrategyType("gambling")
+			.withFinalStrategyType("GAMBLING")
 			.withIsCompleted(true)
 			.withFinalScore(8000)
 			.build();
@@ -55,7 +55,7 @@ describe("ResetGameCommandHandler", () => {
 		expect(resetGame?.resolvedIssueOptionIds).toEqual([]);
 		expect(resetGame?.finalStrategyType).toBe(null);
 		expect(resetGame?.initialBudget).toBe(initialBudget);
-		expect(resetGame?.currentBudget).toBe(initialBudget);
+		expect(resetGame?.currentBudget).toEqual(initialBudget);
 	});
 
 	it("should maintain the current budget when resetting", async () => {

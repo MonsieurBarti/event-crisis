@@ -7,11 +7,17 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+enum FinalStrategyType {
+  GAMBLING
+  MARKETING
+  PROFITABILITY
+}
+
 model Game {
-  id                     String    @id @default(uuid())
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
-  initialBudget         Int
+  id                     String            @id @default(uuid())
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  initialBudget          Int
   currentBudget          Int
   playerId               String
   selectedBriefId        String?
@@ -20,11 +26,11 @@ model Game {
   selectedConstraintId   String?
   selectedEntertainmentId String?
   selectedCateringId     String?
-  resolvedIssueIds       String    @default("[]")
-  resolvedIssueOptionIds String    @default("[]")
-  finalStrategyType      String?
+  resolvedIssueIds       String            @default("[]")
+  resolvedIssueOptionIds String            @default("[]")
+  finalStrategyType      FinalStrategyType?
   finalScore             Int?
-  isCompleted            Boolean   @default(false)
+  isCompleted            Boolean           @default(false)
 }
 
 model Brief {

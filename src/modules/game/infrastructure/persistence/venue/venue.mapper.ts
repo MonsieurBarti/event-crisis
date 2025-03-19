@@ -5,7 +5,7 @@ type DatabaseVenue = Prisma.VenueGetPayload<true>;
 
 export class VenueMapper {
 	static toDomain(prismaVenue: DatabaseVenue): Venue {
-		return new Venue({
+		return Venue.create({
 			id: prismaVenue.id,
 			name: prismaVenue.name,
 			description: prismaVenue.description,

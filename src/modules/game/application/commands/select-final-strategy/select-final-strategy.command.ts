@@ -8,15 +8,11 @@ import {
 	PrerequisiteError,
 	ZodValidationError,
 } from "@/modules/game/domain/errors/game-error.base";
-import { Game } from "@/modules/game/domain/game/game";
-
-// Define valid strategy types
-const strategyTypeEnum = z.enum(["gambling", "marketing", "profitability"]);
-export type StrategyType = z.infer<typeof strategyTypeEnum>;
+import { FinalStrategyTypeSchema, Game } from "@/modules/game/domain/game/game";
 
 export const selectFinalStrategyPropsSchema = z.object({
 	gameId: z.string().uuid("Game ID must be a valid UUID"),
-	strategyType: strategyTypeEnum,
+	strategyType: FinalStrategyTypeSchema,
 });
 
 export type SelectFinalStrategyCommandProps = z.infer<typeof selectFinalStrategyPropsSchema>;

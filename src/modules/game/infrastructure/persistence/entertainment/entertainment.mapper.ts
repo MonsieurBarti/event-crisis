@@ -5,7 +5,7 @@ type DatabaseEntertainment = Prisma.EntertainmentGetPayload<true>;
 
 export class EntertainmentMapper {
 	static toDomain(dbModel: DatabaseEntertainment): Entertainment {
-		return new Entertainment({
+		return Entertainment.create({
 			id: dbModel.id,
 			name: dbModel.name,
 			description: dbModel.description,

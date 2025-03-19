@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { Game } from "./game";
+import { FinalStrategyType, Game } from "./game";
 
 export class GameBuilder {
 	private id: string;
@@ -16,7 +16,7 @@ export class GameBuilder {
 	private selectedCateringId: string | null;
 	private resolvedIssueIds: string[];
 	private resolvedIssueOptionIds: string[];
-	private finalStrategyType: string | null;
+	private finalStrategyType: FinalStrategyType | null;
 	private finalScore: number | null;
 	private isCompleted: boolean;
 
@@ -25,7 +25,7 @@ export class GameBuilder {
 		this.createdAt = faker.date.recent();
 		this.updatedAt = faker.date.recent();
 		this.initialBudget = faker.number.int({ min: 10000, max: 100000 });
-		this.currentBudget = faker.number.int({ min: 10000, max: 100000 });
+		this.currentBudget = this.initialBudget;
 		this.playerId = faker.string.uuid();
 		this.selectedBriefId = null;
 		this.selectedVenueId = null;
@@ -57,6 +57,7 @@ export class GameBuilder {
 
 	withInitialBudget(initialBudget: number): GameBuilder {
 		this.initialBudget = initialBudget;
+		this.currentBudget = initialBudget;
 		return this;
 	}
 
@@ -110,7 +111,7 @@ export class GameBuilder {
 		return this;
 	}
 
-	withFinalStrategyType(finalStrategyType: string | null): GameBuilder {
+	withFinalStrategyType(finalStrategyType: FinalStrategyType | null): GameBuilder {
 		this.finalStrategyType = finalStrategyType;
 		return this;
 	}
@@ -125,7 +126,6 @@ export class GameBuilder {
 		return this;
 	}
 
-	// Helper methods for backward compatibility
 	withResolvedIssueId(resolvedIssueId: string | null): GameBuilder {
 		if (resolvedIssueId) {
 			this.resolvedIssueIds = [resolvedIssueId];
@@ -141,7 +141,7 @@ export class GameBuilder {
 	}
 
 	build(): Game {
-		return new Game({
+		return Game.create({
 			id: this.id,
 			createdAt: this.createdAt,
 			updatedAt: this.updatedAt,

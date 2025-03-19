@@ -1,3 +1,10 @@
+export class InsufficientBudgetError extends Error {
+	constructor(message: string = "Not enough budget available") {
+		super(message);
+		this.name = "InsufficientBudgetError";
+	}
+}
+
 export class GameError extends Error {
 	constructor(message: string) {
 		super(message);

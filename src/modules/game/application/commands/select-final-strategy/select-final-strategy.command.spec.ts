@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { SelectFinalStrategyCommandHandler, StrategyType } from "./select-final-strategy.command";
+import { SelectFinalStrategyCommandHandler } from "./select-final-strategy.command";
 import { GameBuilder } from "@/modules/game/domain/game/game.builder";
 import { InMemoryGameRepository } from "@/modules/game/infrastructure/persistence/game/in-memory-game.repository";
+import { FinalStrategyType } from "@/modules/game/domain/game/game";
 
 describe("SelectFinalStrategyCommandHandler", () => {
 	const gameRepository = new InMemoryGameRepository();
@@ -21,7 +22,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 		const cateringId = uuidv4();
 		const issueId = uuidv4();
 		const issueOptionId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder()
 			.withId(gameId)
@@ -49,7 +50,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 
 	it("should throw error if game is not found", async () => {
 		const gameId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		await expect(
 			handler.execute({
@@ -60,7 +61,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 
 	it("should throw error if brief is not selected", async () => {
 		const gameId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder().withId(gameId).withIsCompleted(false).build();
 
@@ -76,7 +77,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 	it("should throw error if venue is not selected", async () => {
 		const gameId = uuidv4();
 		const briefId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder()
 			.withId(gameId)
@@ -97,7 +98,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 		const gameId = uuidv4();
 		const briefId = uuidv4();
 		const venueId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder()
 			.withId(gameId)
@@ -120,7 +121,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 		const briefId = uuidv4();
 		const venueId = uuidv4();
 		const conceptId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder()
 			.withId(gameId)
@@ -145,7 +146,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 		const venueId = uuidv4();
 		const conceptId = uuidv4();
 		const constraintId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder()
 			.withId(gameId)
@@ -172,7 +173,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 		const conceptId = uuidv4();
 		const constraintId = uuidv4();
 		const entertainmentId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder()
 			.withId(gameId)
@@ -201,7 +202,7 @@ describe("SelectFinalStrategyCommandHandler", () => {
 		const constraintId = uuidv4();
 		const entertainmentId = uuidv4();
 		const cateringId = uuidv4();
-		const strategyType: StrategyType = "gambling";
+		const strategyType: FinalStrategyType = "GAMBLING";
 
 		const game = new GameBuilder()
 			.withId(gameId)

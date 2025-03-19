@@ -1,3 +1,14 @@
+import { z } from "zod";
+import { InsufficientBudgetError } from "../errors/game-error.base";
+
+export const FinalStrategyTypeSchema = z.enum(["GAMBLING", "MARKETING", "PROFITABILITY"]);
+export const FinalStrategyType = {
+	GAMBLING: "GAMBLING",
+	MARKETING: "MARKETING",
+	PROFITABILITY: "PROFITABILITY",
+} as const;
+export type FinalStrategyType = (typeof FinalStrategyType)[keyof typeof FinalStrategyType];
+
 export interface GameProps {
 	id: string;
 	createdAt: Date;
@@ -13,35 +24,35 @@ export interface GameProps {
 	selectedCateringId: string | null;
 	resolvedIssueIds: string[];
 	resolvedIssueOptionIds: string[];
-	finalStrategyType: string | null;
+	finalStrategyType: FinalStrategyType | null;
 	finalScore: number | null;
 	isCompleted: boolean;
 }
 
 export class Game {
-	private readonly _id: string;
-	private readonly _createdAt: Date;
-	private readonly _updatedAt: Date;
-	private readonly _currentBudget: number;
-	private readonly _initialBudget: number;
-	private readonly _playerId: string;
-	private readonly _selectedBriefId: string | null;
-	private readonly _selectedVenueId: string | null;
-	private readonly _selectedConceptId: string | null;
-	private readonly _selectedConstraintId: string | null;
-	private readonly _selectedEntertainmentId: string | null;
-	private readonly _selectedCateringId: string | null;
-	private readonly _resolvedIssueIds: string[];
-	private readonly _resolvedIssueOptionIds: string[];
-	private readonly _finalStrategyType: string | null;
-	private readonly _finalScore: number | null;
-	private readonly _isCompleted: boolean;
+	private _id: string;
+	private _createdAt: Date;
+	private _updatedAt: Date;
+	private _currentBudget: number;
+	private _initialBudget: number;
+	private _playerId: string;
+	private _selectedBriefId: string | null;
+	private _selectedVenueId: string | null;
+	private _selectedConceptId: string | null;
+	private _selectedConstraintId: string | null;
+	private _selectedEntertainmentId: string | null;
+	private _selectedCateringId: string | null;
+	private _resolvedIssueIds: string[];
+	private _resolvedIssueOptionIds: string[];
+	private _finalStrategyType: FinalStrategyType | null;
+	private _finalScore: number | null;
+	private _isCompleted: boolean;
 
-	constructor(props: GameProps) {
+	private constructor(props: GameProps) {
 		this._id = props.id;
 		this._createdAt = props.createdAt;
 		this._updatedAt = props.updatedAt;
-		this._currentBudget = props.currentBudget;
+		this._currentBudget = props.currentBudget || props.initialBudget;
 		this._initialBudget = props.initialBudget;
 		this._playerId = props.playerId;
 		this._selectedBriefId = props.selectedBriefId || null;
@@ -64,12 +75,7 @@ export class Game {
 		if (!props.initialBudget) throw new Error("Game initialBudget is required");
 		if (!props.playerId) throw new Error("Game playerId is required");
 
-		const currentBudget = props.currentBudget ?? props.initialBudget;
-
-		return new Game({
-			...props,
-			currentBudget,
-		});
+		return new Game(props);
 	}
 
 	get id(): string {
@@ -128,7 +134,7 @@ export class Game {
 		return [...this._resolvedIssueOptionIds];
 	}
 
-	get finalStrategyType(): string | null {
+	get finalStrategyType(): FinalStrategyType | null {
 		return this._finalStrategyType;
 	}
 
@@ -144,70 +150,89 @@ export class Game {
 		if (this._selectedBriefId) {
 			throw new Error("Brief already selected");
 		}
-		return new Game({
-			...this.toObject(),
-			selectedBriefId: briefId,
-			updatedAt: new Date(),
-		});
+		this._selectedBriefId = briefId;
+		this._updatedAt = new Date();
+		return this;
 	}
 
 	selectVenue(venueId: string, cost: number = 0): Game {
 		if (this._selectedVenueId) {
 			throw new Error("Venue already selected");
 		}
-		return new Game({
-			...this.toObject(),
-			selectedVenueId: venueId,
-			currentBudget: cost > 0 ? this._currentBudget - cost : this._currentBudget,
-			updatedAt: new Date(),
-		});
+
+		if (cost > 0 && cost > this._currentBudget) {
+			throw new InsufficientBudgetError(
+				`Not enough budget to select this venue (required: ${cost}, available: ${this._currentBudget})`,
+			);
+		}
+
+		this._selectedVenueId = venueId;
+		this._currentBudget = cost > 0 ? this._currentBudget - cost : this._currentBudget;
+		this._updatedAt = new Date();
+		return this;
 	}
 
 	selectConcept(conceptId: string, cost: number = 0): Game {
 		if (this._selectedConceptId) {
 			throw new Error("Concept already selected");
 		}
-		return new Game({
-			...this.toObject(),
-			selectedConceptId: conceptId,
-			currentBudget: cost > 0 ? this._currentBudget - cost : this._currentBudget,
-			updatedAt: new Date(),
-		});
+
+		if (cost > 0 && cost > this._currentBudget) {
+			throw new InsufficientBudgetError(
+				`Not enough budget to select this concept (required: ${cost}, available: ${this._currentBudget})`,
+			);
+		}
+
+		this._selectedConceptId = conceptId;
+		this._currentBudget = cost > 0 ? this._currentBudget - cost : this._currentBudget;
+		this._updatedAt = new Date();
+		return this;
 	}
 
 	selectConstraint(constraintId: string): Game {
 		if (this._selectedConstraintId) {
 			throw new Error("Constraint already selected");
 		}
-		return new Game({
-			...this.toObject(),
-			selectedConstraintId: constraintId,
-			updatedAt: new Date(),
-		});
+		this._selectedConstraintId = constraintId;
+		this._updatedAt = new Date();
+		return this;
 	}
 
 	selectEntertainment(entertainmentId: string, cost: number): Game {
 		if (this._selectedEntertainmentId) {
 			throw new Error("Entertainment already selected");
 		}
-		return new Game({
-			...this.toObject(),
-			selectedEntertainmentId: entertainmentId,
-			currentBudget: cost > 0 ? this._currentBudget - cost : this._currentBudget,
-			updatedAt: new Date(),
-		});
+
+		if (cost > 0 && cost > this._currentBudget) {
+			throw new InsufficientBudgetError(
+				`Not enough budget to select this entertainment (required: ${cost}, available: ${this._currentBudget})`,
+			);
+		}
+
+		this._selectedEntertainmentId = entertainmentId;
+		this._currentBudget = cost > 0 ? this._currentBudget - cost : this._currentBudget;
+		this._updatedAt = new Date();
+
+		return this;
 	}
 
 	selectCatering(cateringId: string, cost: number): Game {
 		if (this._selectedCateringId) {
 			throw new Error("Catering already selected");
 		}
-		return new Game({
-			...this.toObject(),
-			selectedCateringId: cateringId,
-			currentBudget: cost > 0 ? this._currentBudget - cost : this._currentBudget,
-			updatedAt: new Date(),
-		});
+
+		if (cost > 0 && cost > this._currentBudget) {
+			throw new InsufficientBudgetError(
+				`Not enough budget to select this catering (required: ${cost}, available: ${this._currentBudget})`,
+			);
+		}
+
+		this._selectedCateringId = cateringId;
+
+		this._currentBudget = cost > 0 ? this._currentBudget - cost : this._currentBudget;
+		this._updatedAt = new Date();
+
+		return this;
 	}
 
 	resolveIssue(issueId: string, optionId: string, budgetImpact: number): Game {
@@ -219,37 +244,48 @@ export class Game {
 			throw new Error("This issue has already been resolved");
 		}
 
-		return new Game({
-			...this.toObject(),
-			resolvedIssueIds: [...this._resolvedIssueIds, issueId],
-			resolvedIssueOptionIds: [...this._resolvedIssueOptionIds, optionId],
-			currentBudget: this._currentBudget + budgetImpact,
-			updatedAt: new Date(),
-		});
+		if (budgetImpact < 0 && this._currentBudget + budgetImpact < 0) {
+			throw new InsufficientBudgetError(
+				`Not enough budget to resolve this issue (impact: ${budgetImpact}, available: ${this._currentBudget})`,
+			);
+		}
+
+		this._resolvedIssueIds.push(issueId);
+		this._resolvedIssueOptionIds.push(optionId);
+		this._currentBudget += budgetImpact;
+		this._updatedAt = new Date();
+
+		return this;
 	}
 
-	selectFinalStrategy(
-		strategyType: "gambling" | "marketing" | "profitability",
-		budgetImpact: number = 0,
-	): Game {
+	selectFinalStrategy(strategyType: FinalStrategyType, budgetImpact: number = 0): Game {
 		if (this._finalStrategyType) {
 			throw new Error("Final strategy already selected");
 		}
 
-		return new Game({
-			...this.toObject(),
-			finalStrategyType: strategyType,
-			currentBudget: this._currentBudget + budgetImpact,
-			updatedAt: new Date(),
-		});
+		if (budgetImpact < 0 && this._currentBudget + budgetImpact < 0) {
+			throw new InsufficientBudgetError(
+				`Not enough budget to select this strategy (impact: ${budgetImpact}, available: ${this._currentBudget})`,
+			);
+		}
+
+		this._finalStrategyType = strategyType;
+		this._currentBudget += budgetImpact;
+		this._updatedAt = new Date();
+
+		return this;
 	}
 
 	adjustBudget(amount: number): Game {
-		return new Game({
-			...this.toObject(),
-			currentBudget: this._currentBudget + amount,
-			updatedAt: new Date(),
-		});
+		if (amount < 0 && this._currentBudget + amount < 0) {
+			throw new InsufficientBudgetError(
+				`Cannot adjust budget: would result in negative balance (adjustment: ${amount}, available: ${this._currentBudget})`,
+			);
+		}
+
+		this._currentBudget += amount;
+		this._updatedAt = new Date();
+		return this;
 	}
 
 	complete(finalScore: number): Game {
@@ -270,51 +306,27 @@ export class Game {
 			throw new Error("Cannot complete game: missing required selections");
 		}
 
-		return new Game({
-			...this.toObject(),
-			finalScore,
-			isCompleted: true,
-			updatedAt: new Date(),
-		});
+		this._finalScore = finalScore;
+		this._isCompleted = true;
+		this._updatedAt = new Date();
+
+		return this;
 	}
 
 	reset(): Game {
-		return new Game({
-			...this.toObject(),
-			selectedBriefId: null,
-			selectedVenueId: null,
-			selectedConceptId: null,
-			selectedConstraintId: null,
-			selectedEntertainmentId: null,
-			selectedCateringId: null,
-			resolvedIssueIds: [],
-			resolvedIssueOptionIds: [],
-			finalStrategyType: null,
-			finalScore: null,
-			isCompleted: false,
-			updatedAt: new Date(),
-		});
-	}
-
-	private toObject(): GameProps {
-		return {
-			id: this._id,
-			createdAt: this._createdAt,
-			updatedAt: this._updatedAt,
-			initialBudget: this._initialBudget,
-			currentBudget: this._currentBudget,
-			playerId: this._playerId,
-			selectedBriefId: this._selectedBriefId,
-			selectedVenueId: this._selectedVenueId,
-			selectedConceptId: this._selectedConceptId,
-			selectedConstraintId: this._selectedConstraintId,
-			selectedEntertainmentId: this._selectedEntertainmentId,
-			selectedCateringId: this._selectedCateringId,
-			resolvedIssueIds: [...this._resolvedIssueIds],
-			resolvedIssueOptionIds: [...this._resolvedIssueOptionIds],
-			finalStrategyType: this._finalStrategyType,
-			finalScore: this._finalScore,
-			isCompleted: this._isCompleted,
-		};
+		this._currentBudget = this._initialBudget;
+		this._selectedBriefId = null;
+		this._selectedVenueId = null;
+		this._selectedConceptId = null;
+		this._selectedConstraintId = null;
+		this._selectedEntertainmentId = null;
+		this._selectedCateringId = null;
+		this._resolvedIssueIds = [];
+		this._resolvedIssueOptionIds = [];
+		this._finalStrategyType = null;
+		this._finalScore = null;
+		this._isCompleted = false;
+		this._updatedAt = new Date();
+		return this;
 	}
 }

@@ -34,7 +34,7 @@ export class EntertainmentBuilder {
 	}
 
 	build(): Entertainment {
-		return new Entertainment({
+		return Entertainment.create({
 			id: this._id,
 			name: this._name,
 			description: this._description,

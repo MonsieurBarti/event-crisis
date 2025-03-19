@@ -5,7 +5,7 @@ type DatabaseBrief = Prisma.BriefGetPayload<true>;
 
 export class BriefMapper {
 	static toDomain(prismaBrief: DatabaseBrief): Brief {
-		return new Brief({
+		return Brief.create({
 			id: prismaBrief.id,
 			name: prismaBrief.name,
 			description: prismaBrief.description,

@@ -3,7 +3,6 @@ import {
 	UnexpectedIssue,
 	UnexpectedIssueOption,
 	UnexpectedIssueOptionProps,
-	UnexpectedIssueProps,
 } from "./unexpected-issue";
 
 export class UnexpectedIssueOptionBuilder {
@@ -12,15 +11,11 @@ export class UnexpectedIssueOptionBuilder {
 	private description: string;
 	private budgetImpact: number;
 
-	private constructor() {
+	constructor() {
 		this.id = faker.string.uuid();
 		this.name = faker.commerce.productName();
 		this.description = faker.lorem.paragraph();
 		this.budgetImpact = faker.number.int({ min: -10000, max: 5000 });
-	}
-
-	public static create(): UnexpectedIssueOptionBuilder {
-		return new UnexpectedIssueOptionBuilder();
 	}
 
 	withId(id: string): UnexpectedIssueOptionBuilder {
@@ -59,15 +54,11 @@ export class UnexpectedIssueBuilder {
 	private description: string;
 	private options: UnexpectedIssueOption[];
 
-	private constructor() {
+	constructor() {
 		this.id = faker.string.uuid();
 		this.name = faker.commerce.productName();
 		this.description = faker.lorem.paragraph();
 		this.options = [];
-	}
-
-	public static create(): UnexpectedIssueBuilder {
-		return new UnexpectedIssueBuilder();
 	}
 
 	withId(id: string): UnexpectedIssueBuilder {
