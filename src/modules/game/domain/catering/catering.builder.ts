@@ -2,11 +2,19 @@ import { faker } from "@faker-js/faker";
 import { Catering } from "./catering";
 
 export class CateringBuilder {
-	private id = faker.string.uuid();
-	private name = faker.commerce.productName();
-	private description = faker.commerce.productDescription();
-	private cost = faker.number.int({ min: 500, max: 5000 });
-	private guestSatisfaction = faker.number.int({ min: 1, max: 10 });
+	private id: string;
+	private name: string;
+	private description: string;
+	private cost: number;
+	private impact: number;
+
+	constructor() {
+		this.id = faker.string.uuid();
+		this.name = faker.commerce.productName();
+		this.description = faker.commerce.productDescription();
+		this.cost = faker.number.int({ min: 500, max: 5000 });
+		this.impact = faker.number.int({ min: 1, max: 10 });
+	}
 
 	withId(id: string): CateringBuilder {
 		this.id = id;
@@ -28,8 +36,8 @@ export class CateringBuilder {
 		return this;
 	}
 
-	withGuestSatisfaction(guestSatisfaction: number): CateringBuilder {
-		this.guestSatisfaction = guestSatisfaction;
+	withImpact(impact: number): CateringBuilder {
+		this.impact = impact;
 		return this;
 	}
 
@@ -39,7 +47,7 @@ export class CateringBuilder {
 			name: this.name,
 			description: this.description,
 			cost: this.cost,
-			guestSatisfaction: this.guestSatisfaction,
+			impact: this.impact,
 		});
 	}
 }

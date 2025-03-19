@@ -189,11 +189,19 @@ export class Game {
 		return this;
 	}
 
-	selectConstraint(constraintId: string): Game {
+	selectConstraint(constraintId: string, cost: number = 0): Game {
 		if (this._selectedConstraintId) {
 			throw new Error("Constraint already selected");
 		}
+
+		if (cost > 0 && cost > this._currentBudget) {
+			throw new InsufficientBudgetError(
+				`Not enough budget to select this constraint (required: ${cost}, available: ${this._currentBudget})`,
+			);
+		}
+
 		this._selectedConstraintId = constraintId;
+		this._currentBudget = cost > 0 ? this._currentBudget - cost : this._currentBudget;
 		this._updatedAt = new Date();
 		return this;
 	}

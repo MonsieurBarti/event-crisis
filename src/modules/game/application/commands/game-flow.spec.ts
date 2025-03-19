@@ -70,6 +70,8 @@ describe("Game Flow Tests", () => {
 		venueRepository,
 		conceptRepository,
 		constraintRepository,
+		entertainmentRepository,
+		cateringRepository,
 	);
 	const initializeGameCommandHandler = new InitializeGameCommandHandler(gameRepository);
 	const resolveUnexpectedIssueCommandHandler = new ResolveUnexpectedIssueCommandHandler(
@@ -140,12 +142,21 @@ describe("Game Flow Tests", () => {
 		concepts.forEach((concept) => conceptRepository.save(concept));
 
 		const constraints = [
-			new ConstraintBuilder().withName("The event must be 100% eco-responsible").build(),
 			new ConstraintBuilder()
-
-				.withName("It must be organized in a historical location")
+				.withName("The event must be 100% eco-responsible")
+				.withImpact(4)
+				.withCost(750)
 				.build(),
-			new ConstraintBuilder().withName("Live broadcasting is mandatory").build(),
+			new ConstraintBuilder()
+				.withName("It must be organized in a historical location")
+				.withImpact(7)
+				.withCost(2000)
+				.build(),
+			new ConstraintBuilder()
+				.withImpact(10)
+				.withCost(5000)
+				.withName("Live broadcasting is mandatory")
+				.build(),
 		];
 		constraints.forEach((constraint) => constraintRepository.save(constraint));
 
@@ -272,6 +283,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify constraint selection
 		expect(game.selectedConstraintId).toBe(selectedConstraint.id);
+		expect(game.currentBudget).toBe(34250); // 35000 - 750
 
 		// Step 6: User encounters and resolves first unexpected issue
 		const issues = await unexpectedIssueRepository.findAll();
@@ -285,7 +297,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify issue resolution and budget impact
 		expect(game.resolvedIssueIds).toContain(selectedIssue.id);
-		expect(game.currentBudget).toBe(33000); // 35000 - 2000
+		expect(game.currentBudget).toBe(32250); // 34250 - 2000
 
 		// Step 7: User selects entertainment
 		const entertainments = await entertainmentRepository.findAll();
@@ -299,7 +311,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify entertainment selection and budget update
 		expect(game.selectedEntertainmentId).toBe(selectedEntertainment.id);
-		expect(game.currentBudget).toBe(25000); // 33000 - 8000
+		expect(game.currentBudget).toBe(24250); // 32250 - 8000
 
 		// Step 8: User encounters and resolves second unexpected issue
 		const selectedIssue2 = issues[1];
@@ -312,7 +324,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify issue resolution and budget impact
 		expect(game.resolvedIssueIds).toContain(selectedIssue2.id);
-		expect(game.currentBudget).toBe(23000); // 25000 - 2000
+		expect(game.currentBudget).toBe(22250); // 24250 - 2000
 
 		// Step 9: User selects catering
 		const caterings = await cateringRepository.findAll();
@@ -325,7 +337,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify catering selection and budget update
 		expect(game.selectedCateringId).toBe(selectedCatering.id);
-		expect(game.currentBudget).toBe(13000); // 23000 - 10000
+		expect(game.currentBudget).toBe(12250); // 22250 - 10000
 
 		// Step 10: User encounters and resolves third unexpected issue
 		const issue3 = issues[2];
@@ -338,7 +350,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify issue resolution and budget impact
 		expect(game.resolvedIssueIds).toContain(issue3.id);
-		expect(game.currentBudget).toBe(10000); // 13000 - 3000
+		expect(game.currentBudget).toBe(9250); // 12250 - 3000
 
 		// Step 11: User selects final strategy
 		const strategyCommand = new SelectFinalStrategyCommand({
@@ -369,7 +381,7 @@ describe("Game Flow Tests", () => {
 	it("Should handle a challenging scenario with minimal remaining budget", async () => {
 		// Step 1: Initialize a new game with smaller budget
 		const playerId = uuidv4();
-		const initialBudget = 70000;
+		const initialBudget = 75000;
 		const initGameCommand = new InitializeGameCommand({
 			playerId,
 			initialBudget,
@@ -427,6 +439,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify constraint selection
 		expect(game.selectedConstraintId).toBe(selectedConstraint.id);
+		expect(game.currentBudget).toBe(19250); // 20000 - 750;
 
 		// Step 6: User encounters all unexpected issues in a row
 		// First issue
@@ -437,7 +450,7 @@ describe("Game Flow Tests", () => {
 			optionId: issues[0].options[0].id, // -2000
 		});
 		await resolveUnexpectedIssueCommandHandler.execute(issue1Command);
-		expect(game.currentBudget).toBe(18000); // 20000 - 2000
+		expect(game.currentBudget).toBe(17250); // 19250 - 2000
 
 		// Second issue
 		const issue2Command = new ResolveUnexpectedIssueCommand({
@@ -446,7 +459,7 @@ describe("Game Flow Tests", () => {
 			optionId: issues[1].options[0].id, // -2000
 		});
 		await resolveUnexpectedIssueCommandHandler.execute(issue2Command);
-		expect(game.currentBudget).toBe(16000); // 18000 - 2000
+		expect(game.currentBudget).toBe(15250); // 17250 - 2000
 
 		// Third issue
 		const issue3Command = new ResolveUnexpectedIssueCommand({
@@ -455,7 +468,7 @@ describe("Game Flow Tests", () => {
 			optionId: issues[2].options[0].id, // -3000
 		});
 		await resolveUnexpectedIssueCommandHandler.execute(issue3Command);
-		expect(game.currentBudget).toBe(13000); // 16000 - 3000
+		expect(game.currentBudget).toBe(12250); // 15250 - 3000
 
 		// Step 7: User selects expensive entertainment
 		const entertainments = await entertainmentRepository.findAll();
@@ -465,7 +478,7 @@ describe("Game Flow Tests", () => {
 			entertainmentId: selectedEntertainment.id,
 		});
 		await selectEntertainmentCommandHandler.execute(entertainmentCommand);
-		expect(game.currentBudget).toBe(5000); // 13000 - 8000
+		expect(game.currentBudget).toBe(4250); // 12250 - 8000
 
 		// Step 8: User selects a less expensive catering (can't afford premium seated dinner)
 		const caterings = await cateringRepository.findAll();
@@ -480,8 +493,7 @@ describe("Game Flow Tests", () => {
 
 		// Verify catering selection and budget update
 		expect(game.selectedCateringId).toBe(selectedCatering.id);
-		// Since we don't know the exact cost, we'll just verify it's less than our previous amount
-		expect(game.currentBudget).toBeLessThan(5000);
+		expect(game.currentBudget).toBeLessThan(4250);
 
 		// Step 9: User selects GAMBLING strategy to try to maximize score despite the low budget
 		const strategyCommand = new SelectFinalStrategyCommand({
@@ -554,6 +566,9 @@ describe("Game Flow Tests", () => {
 		});
 		await selectConstraintCommandHandler.execute(constraintCommand);
 
+		expect(game.selectedConstraintId).toBe(selectedConstraint.id);
+		expect(game.currentBudget).toBe(36000); // 41000 - 5000
+
 		// Step 6: User resolves an unexpected issue
 		const issues = await unexpectedIssueRepository.findAll();
 		const issueCommand = new ResolveUnexpectedIssueCommand({
@@ -562,7 +577,7 @@ describe("Game Flow Tests", () => {
 			optionId: issues[1].options[0].id, // -2000
 		});
 		await resolveUnexpectedIssueCommandHandler.execute(issueCommand);
-		expect(game.currentBudget).toBe(39000); // 41000 - 2000
+		expect(game.currentBudget).toBe(34000); // 36000 - 2000
 
 		// Step 7: User selects affordable entertainment
 		const entertainments = await entertainmentRepository.findAll();
@@ -572,7 +587,7 @@ describe("Game Flow Tests", () => {
 			entertainmentId: selectedEntertainment.id,
 		});
 		await selectEntertainmentCommandHandler.execute(entertainmentCommand);
-		expect(game.currentBudget).toBe(35000); // 39000 - 4000
+		expect(game.currentBudget).toBe(30000); // 34000 - 4000
 
 		// Step 8: User selects mid-tier catering
 		const caterings = await cateringRepository.findAll();
@@ -583,7 +598,7 @@ describe("Game Flow Tests", () => {
 		});
 		await selectCateringCommandHandler.execute(cateringCommand);
 
-		expect(game.currentBudget).toBeGreaterThan(30000); // Gourmet buffet has some cost
+		expect(game.currentBudget).toBeGreaterThan(25000); // Gourmet buffet has some cost
 
 		const strategyCommand = new SelectFinalStrategyCommand({
 			gameId,

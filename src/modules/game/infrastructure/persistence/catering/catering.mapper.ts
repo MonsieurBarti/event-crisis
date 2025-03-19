@@ -10,7 +10,7 @@ export class CateringMapper {
 			name: dbModel.name,
 			description: dbModel.description,
 			cost: dbModel.cost,
-			guestSatisfaction: dbModel.guestSatisfaction,
+			impact: dbModel.impact,
 		});
 	}
 
@@ -20,7 +20,7 @@ export class CateringMapper {
 			name: domain.name,
 			description: domain.description,
 			cost: domain.cost,
-			guestSatisfaction: domain.guestSatisfaction,
+			impact: domain.impact,
 		};
 	}
 }

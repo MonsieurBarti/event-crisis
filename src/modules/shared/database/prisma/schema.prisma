@@ -58,7 +58,8 @@ model Constraint {
   id          String @id @default(uuid())
   name        String
   description String
-  impact      String
+  impact      Int
+  cost        Int
 }
 
 model Entertainment {
@@ -74,7 +75,7 @@ model Catering {
   name             String
   description      String
   cost             Int
-  guestSatisfaction Int
+  impact Int
 }
 
 model UnexpectedIssue {

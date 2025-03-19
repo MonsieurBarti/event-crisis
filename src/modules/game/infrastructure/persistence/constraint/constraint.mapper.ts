@@ -10,6 +10,7 @@ export class ConstraintMapper {
 			name: prismaConstraint.name,
 			description: prismaConstraint.description,
 			impact: prismaConstraint.impact,
+			cost: prismaConstraint.cost,
 		});
 	}
 
@@ -19,6 +20,7 @@ export class ConstraintMapper {
 			name: constraint.name,
 			description: constraint.description,
 			impact: constraint.impact,
+			cost: constraint.cost,
 		};
 	}
 }

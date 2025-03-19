@@ -5,11 +5,15 @@ import { BriefBuilder } from "@/modules/game/domain/brief/brief.builder";
 import { VenueBuilder } from "@/modules/game/domain/venue/venue.builder";
 import { ConceptBuilder } from "@/modules/game/domain/concept/concept.builder";
 import { ConstraintBuilder } from "@/modules/game/domain/constraint/constraint.builder";
+import { EntertainmentBuilder } from "@/modules/game/domain/entertainment/entertainment.builder";
+import { CateringBuilder } from "@/modules/game/domain/catering/catering.builder";
 import { InMemoryGameRepository } from "@/modules/game/infrastructure/persistence/game/in-memory-game.repository";
 import { InMemoryBriefRepository } from "@/modules/game/infrastructure/persistence/brief/in-memory-brief.repository";
 import { InMemoryVenueRepository } from "@/modules/game/infrastructure/persistence/venue/in-memory-venue.repository";
 import { InMemoryConceptRepository } from "@/modules/game/infrastructure/persistence/concept/in-memory-concept.repository";
 import { InMemoryConstraintRepository } from "@/modules/game/infrastructure/persistence/constraint/in-memory-constraint.repository";
+import { InMemoryEntertainmentRepository } from "@/modules/game/infrastructure/persistence/entertainment/in-memory-entertainment.repository";
+import { InMemoryCateringRepository } from "@/modules/game/infrastructure/persistence/catering/in-memory-catering.repository";
 
 describe("CalculateFinalScoreCommandHandler", () => {
 	const gameRepository = new InMemoryGameRepository();
@@ -17,6 +21,8 @@ describe("CalculateFinalScoreCommandHandler", () => {
 	const venueRepository = new InMemoryVenueRepository();
 	const conceptRepository = new InMemoryConceptRepository();
 	const constraintRepository = new InMemoryConstraintRepository();
+	const entertainmentRepository = new InMemoryEntertainmentRepository();
+	const cateringRepository = new InMemoryCateringRepository();
 
 	const handler = new CalculateFinalScoreCommandHandler(
 		gameRepository,
@@ -24,6 +30,8 @@ describe("CalculateFinalScoreCommandHandler", () => {
 		venueRepository,
 		conceptRepository,
 		constraintRepository,
+		entertainmentRepository,
+		cateringRepository,
 	);
 
 	beforeEach(() => {
@@ -32,6 +40,8 @@ describe("CalculateFinalScoreCommandHandler", () => {
 		venueRepository.clear();
 		conceptRepository.clear();
 		constraintRepository.clear();
+		entertainmentRepository.clear();
+		cateringRepository.clear();
 	});
 
 	it("should calculate and set the final score for a completed game", async () => {
@@ -52,6 +62,7 @@ describe("CalculateFinalScoreCommandHandler", () => {
 		const conceptCost = 3000;
 		const entertainmentCost = 1000;
 		const cateringCost = 500;
+		const constraintCost = 750;
 		const optionBudgetImpact = -1000;
 
 		const currentBudget =
@@ -59,7 +70,8 @@ describe("CalculateFinalScoreCommandHandler", () => {
 			venueCost -
 			conceptCost -
 			entertainmentCost -
-			cateringCost +
+			cateringCost -
+			constraintCost +
 			optionBudgetImpact;
 
 		// Create game with all selections made
@@ -83,7 +95,23 @@ describe("CalculateFinalScoreCommandHandler", () => {
 
 		const concept = new ConceptBuilder().withId(conceptId).withCost(conceptCost).build();
 
-		const constraint = new ConstraintBuilder().withId(constraintId).build();
+		const constraint = new ConstraintBuilder()
+			.withId(constraintId)
+			.withImpact(4)
+			.withCost(constraintCost)
+			.build();
+
+		const entertainment = new EntertainmentBuilder()
+			.withId(entertainmentId)
+			.withCost(entertainmentCost)
+			.withImpact(6)
+			.build();
+
+		const catering = new CateringBuilder()
+			.withId(cateringId)
+			.withCost(cateringCost)
+			.withImpact(7)
+			.build();
 
 		// Save entities to repositories
 		gameRepository.setActiveGame(game);
@@ -91,6 +119,8 @@ describe("CalculateFinalScoreCommandHandler", () => {
 		venueRepository.setVenue(venue);
 		conceptRepository.setConcept(concept);
 		constraintRepository.setConstraint(constraint);
+		entertainmentRepository.setEntertainment(entertainment);
+		cateringRepository.setCatering(catering);
 
 		// Calculate final score
 		const score = await handler.execute({
@@ -105,8 +135,9 @@ describe("CalculateFinalScoreCommandHandler", () => {
 		expect(updatedGame?.isCompleted).toBe(true);
 		expect(updatedGame?.finalScore).toBe(score);
 
-		// Score should include various factors
+		// Score should include various factors and be between 1 and 20
 		expect(score).toBeGreaterThan(0);
+		expect(score).toBeLessThanOrEqual(20);
 	});
 
 	it("should throw error if game is not found", async () => {
