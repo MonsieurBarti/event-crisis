@@ -162,7 +162,7 @@ describe("Game Flow Tests", () => {
 
 		const caterings = [
 			new CateringBuilder().withName("Premium seated dinner").withCost(10000).build(),
-			new CateringBuilder().withName("Gourmet buffet").build(),
+			new CateringBuilder().withName("Gourmet buffet").withCost(4000).build(),
 			new CateringBuilder().withName("Molecular cocktail bar").build(),
 		];
 		caterings.forEach((catering) => cateringRepository.save(catering));
