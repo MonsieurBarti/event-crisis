@@ -3,7 +3,7 @@ export interface CateringProps {
 	name: string;
 	description: string;
 	cost: number;
-	guestSatisfaction: number;
+	impact: number;
 }
 
 export class Catering {
@@ -11,14 +11,14 @@ export class Catering {
 	private readonly _name: string;
 	private readonly _description: string;
 	private readonly _cost: number;
-	private readonly _guestSatisfaction: number;
+	private readonly _impact: number;
 
 	private constructor(props: CateringProps) {
 		this._id = props.id;
 		this._name = props.name;
 		this._description = props.description;
 		this._cost = props.cost;
-		this._guestSatisfaction = props.guestSatisfaction;
+		this._impact = props.impact;
 	}
 
 	static create(props: CateringProps): Catering {
@@ -26,8 +26,8 @@ export class Catering {
 		if (!props.name) throw new Error("Catering name is required");
 		if (!props.description) throw new Error("Catering description is required");
 		if (props.cost <= 0) throw new Error("Catering cost must be greater than 0");
-		if (props.guestSatisfaction < 1 || props.guestSatisfaction > 10)
-			throw new Error("Catering guest satisfaction must be between 1 and 10");
+		if (props.impact < 1 || props.impact > 10)
+			throw new Error("Catering impact must be between 1 and 10");
 
 		return new Catering(props);
 	}
@@ -48,7 +48,7 @@ export class Catering {
 		return this._cost;
 	}
 
-	get guestSatisfaction(): number {
-		return this._guestSatisfaction;
+	get impact(): number {
+		return this._impact;
 	}
 }

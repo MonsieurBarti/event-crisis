@@ -119,27 +119,31 @@ async function main() {
 				id: uuidv4(),
 				name: "Accessibility Requirements",
 				description: "Event must be fully accessible for guests with mobility issues.",
-				impact: "moderate",
+				impact: 4,
+				cost: 750,
 			},
 			{
 				id: uuidv4(),
 				name: "Media Coverage",
 				description:
 					"Event will have media present and needs to accommodate camera crews and interviews.",
-				impact: "significant",
+				impact: 6,
+				cost: 1250,
 			},
 			{
 				id: uuidv4(),
 				name: "CEO Allergies",
 				description: "The CEO has severe nut allergies and all food must be nut-free.",
-				impact: "minor",
+				impact: 2,
+				cost: 500,
 			},
 			{
 				id: uuidv4(),
 				name: "Security Concerns",
 				description:
 					"High-profile guests require additional security measures and privacy.",
-				impact: "major",
+				impact: 9,
+				cost: 5000,
 			},
 		],
 	});
@@ -191,7 +195,7 @@ async function main() {
 				description:
 					"Multiple chef-attended stations offering a variety of cuisines and dishes.",
 				cost: 12000,
-				guestSatisfaction: 9,
+				impact: 9,
 			},
 			{
 				id: uuidv4(),
@@ -199,21 +203,21 @@ async function main() {
 				description:
 					"Elegant three-course meal with premium ingredients and wine pairings.",
 				cost: 18000,
-				guestSatisfaction: 10,
+				impact: 10,
 			},
 			{
 				id: uuidv4(),
 				name: "International Buffet",
 				description: "Self-service buffet featuring dishes from around the world.",
 				cost: 10000,
-				guestSatisfaction: 7,
+				impact: 7,
 			},
 			{
 				id: uuidv4(),
 				name: "Trendy Food Trucks",
 				description: "A selection of popular food trucks offering casual, trendy bites.",
 				cost: 8000,
-				guestSatisfaction: 8,
+				impact: 8,
 			},
 		],
 	});

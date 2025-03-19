@@ -5,6 +5,8 @@ import { BriefRepository } from "@/modules/game/domain/brief/brief.repository";
 import { VenueRepository } from "@/modules/game/domain/venue/venue.repository";
 import { ConceptRepository } from "@/modules/game/domain/concept/concept.repository";
 import { ConstraintRepository } from "@/modules/game/domain/constraint/constraint.repository";
+import { EntertainmentRepository } from "@/modules/game/domain/entertainment/entertainment.repository";
+import { CateringRepository } from "@/modules/game/domain/catering/catering.repository";
 import { Inject } from "@nestjs/common";
 import { GAME_TOKENS } from "@/modules/game/game.tokens";
 import {
@@ -39,6 +41,10 @@ export class CalculateFinalScoreCommandHandler
 		private readonly conceptRepository: ConceptRepository,
 		@Inject(GAME_TOKENS.CONSTRAINT_REPOSITORY)
 		private readonly constraintRepository: ConstraintRepository,
+		@Inject(GAME_TOKENS.ENTERTAINMENT_REPOSITORY)
+		private readonly entertainmentRepository: EntertainmentRepository,
+		@Inject(GAME_TOKENS.CATERING_REPOSITORY)
+		private readonly cateringRepository: CateringRepository,
 	) {}
 
 	async execute(command: CalculateFinalScoreCommand): Promise<number> {
@@ -75,27 +81,48 @@ export class CalculateFinalScoreCommandHandler
 		}
 
 		// Get entities to calculate score
-		const [brief, venue, concept, constraint] = await Promise.all([
+		const [brief, venue, concept, constraint, entertainment, catering] = await Promise.all([
 			this.briefRepository.findById(game.selectedBriefId),
 			this.venueRepository.findById(game.selectedVenueId),
 			this.conceptRepository.findById(game.selectedConceptId),
 			this.constraintRepository.findById(game.selectedConstraintId),
+			this.entertainmentRepository.findById(game.selectedEntertainmentId),
+			this.cateringRepository.findById(game.selectedCateringId),
 		]);
 
 		if (!brief) throw new NotFoundError("Brief", game.selectedBriefId);
 		if (!venue) throw new NotFoundError("Venue", game.selectedVenueId);
 		if (!concept) throw new NotFoundError("Concept", game.selectedConceptId);
 		if (!constraint) throw new NotFoundError("Constraint", game.selectedConstraintId);
+		if (!entertainment) throw new NotFoundError("Entertainment", game.selectedEntertainmentId);
+		if (!catering) throw new NotFoundError("Catering", game.selectedCateringId);
 
 		let rawScore = 0;
 
+		// Budget efficiency score - how much of the initial budget remains
 		const budgetEfficiencyScore = (game.currentBudget / brief.budget) * 100;
 
+		// Base score from venue and concept costs
 		const venueScore = venue.cost / 1000;
 		const conceptScore = concept.cost / 1000;
 
-		rawScore = budgetEfficiencyScore + venueScore + conceptScore;
+		// Impact scores from various components
+		const constraintImpactScore = constraint.impact * 2; // Multiplier to give constraints appropriate weight
+		const constraintCostScore = constraint.cost / 1000; // Constraints with higher costs should affect score
+		const entertainmentImpactScore = entertainment.impact * 3; // Entertainment has higher weight on guest experience
+		const cateringImpactScore = catering.impact * 3; // Catering has higher weight on guest experience
 
+		// Combine all scores
+		rawScore =
+			budgetEfficiencyScore +
+			venueScore +
+			conceptScore +
+			constraintImpactScore +
+			constraintCostScore +
+			entertainmentImpactScore +
+			cateringImpactScore;
+
+		// Apply strategy multiplier
 		let strategyMultiplier = 1.0;
 		switch (game.finalStrategyType) {
 			case "GAMBLING":
@@ -113,8 +140,9 @@ export class CalculateFinalScoreCommandHandler
 
 		rawScore *= strategyMultiplier;
 
+		// Scale raw score to final score range (1-20)
 		const MIN_POSSIBLE_SCORE = 0;
-		const MAX_POSSIBLE_SCORE = 200;
+		const MAX_POSSIBLE_SCORE = 300; // Adjusted for new factors
 		const MIN_FINAL_SCORE = 1;
 		const MAX_FINAL_SCORE = 20;
 
@@ -124,7 +152,6 @@ export class CalculateFinalScoreCommandHandler
 				(MAX_FINAL_SCORE - MIN_FINAL_SCORE);
 
 		finalScore = Math.max(MIN_FINAL_SCORE, Math.min(MAX_FINAL_SCORE, finalScore));
-
 		finalScore = Math.round(finalScore);
 
 		const completedGame = game.complete(finalScore);

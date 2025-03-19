@@ -62,7 +62,7 @@ export class SelectConstraintCommandHandler implements ICommandHandler<SelectCon
 			throw new NotFoundError("Constraint", validProps.constraintId);
 		}
 
-		const updatedGame = game.selectConstraint(validProps.constraintId);
+		const updatedGame = game.selectConstraint(validProps.constraintId, constraint.cost);
 
 		await this.gameRepository.save(updatedGame);
 

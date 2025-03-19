@@ -32,7 +32,11 @@ describe("SelectConstraintCommandHandler", () => {
 			.withIsCompleted(false)
 			.build();
 
-		const constraint = new ConstraintBuilder().withId(constraintId).build();
+		const constraint = new ConstraintBuilder()
+			.withId(constraintId)
+			.withImpact(2)
+			.withCost(500)
+			.build();
 
 		gameRepository.setActiveGame(game);
 		constraintRepository.setConstraint(constraint);
@@ -44,7 +48,7 @@ describe("SelectConstraintCommandHandler", () => {
 		const updatedGame = await gameRepository.findById(gameId);
 		expect(updatedGame).toBeDefined();
 		expect(updatedGame?.selectedConstraintId).toBe(constraintId);
-		expect(updatedGame?.currentBudget).toBe(initialBudget);
+		expect(updatedGame?.currentBudget).toBe(initialBudget - constraint.cost);
 	});
 
 	it("should throw error if game is not found", async () => {
